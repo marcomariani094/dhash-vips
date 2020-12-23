@@ -16,11 +16,11 @@ unless Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.3.8")
     # Why this hack?
     # 1. Because I want to use Ruby and ./idhash.bundle for tests, not C.
     # 2. Because I don't want to bother users with two gems instead of one.
-    File.write "Makefile", <<~HEREDOC + File.read("Makefile")
+    File.write "Makefile", %Q( + File.read("Makefile")
       .PHONY: test
       test: all
       \t$(RUBY) -r./lib/dhash-vips.rb ./lib/dhash-vips-post-install-test.rb
-    HEREDOC
+    )
 end
 
 # Cases to check:
