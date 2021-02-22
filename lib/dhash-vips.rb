@@ -94,6 +94,22 @@ module DHashVips
     def fingerprint filename, power = 3
       size = 2 ** power
       image = Vips::Image.new_from_file filename, access: :sequential
+      fingerprint_by_image(image, size)
+    end
+
+    def fingerprint_by_url url, power = 3
+      size = 2 ** power
+
+      require "open-uri"
+      buffer = open(url, &:read)
+      image = Vips::Image.new_from_buffer(buffer, "")
+
+      fingerprint_by_image(image, size)
+    end
+
+    private
+
+    def fingerprint_by_image(image, size)
       image = image.resize(size.fdiv(image.width), vscale: size.fdiv(image.height)).colourspace("b-w").flatten
 
       array = image.to_a.map &:flatten
