@@ -24,6 +24,24 @@ module DHashVips
       image.cast("int").conv([[1, -1]]).crop(1, 0, hash_size, hash_size).>(0)./(255).cast("uchar").to_a.join.to_i(2)
     end
 
+    def pixelate_by_url url, hash_size, kernel = nil
+      require "open-uri"
+      buffer = open(url, &:read)
+      image = Vips::Image.new_from_buffer(buffer, "")
+
+      if kernel
+        image.resize((hash_size + 1).fdiv(image.width), vscale: hash_size.fdiv(image.height), kernel: kernel).colourspace("b-w")
+      else
+        image.resize((hash_size + 1).fdiv(image.width), vscale: hash_size.fdiv(image.height)                ).colourspace("b-w")
+      end
+    end
+
+    def calculate_by_url url, hash_size = 8, kernel = nil
+      image = pixelate_by_url url, hash_size, kernel
+
+      image.cast("int").conv([[1, -1]]).crop(1, 0, hash_size, hash_size).>(0)./(255).cast("uchar").to_a.join.to_i(2)
+    end
+
   end
 
   module IDHash
