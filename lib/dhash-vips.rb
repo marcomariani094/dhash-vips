@@ -39,6 +39,9 @@ module DHashVips
     def calculate_by_url url, hash_size = 8, kernel = nil
       image = pixelate_by_url url, hash_size, kernel
 
+      # To remove alpha channel if presents
+      image = image.flatten if image.bands > 1
+
       image.cast("int").conv([[1, -1]]).crop(1, 0, hash_size, hash_size).>(0)./(255).cast("uchar").to_a.join.to_i(2)
     end
 
